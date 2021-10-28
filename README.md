@@ -13,7 +13,7 @@ Therefore, the other, more advanced traces can be tried out with your own Jupyte
 The provided Notebooks show the usage of the API that we provide for semi-automatically finding COs on a side-channel trace.
 Instructions on how to use the provided Notebooks are given within the files:
 1. [setup_test.ipynb](setup_test.ipynb) can be used to test if your conda / python environment is capable of using pyopencl in the required way.
-2. [simple-notebook.ipynb](simple-notebook.ipynb) is the same notebook as the one in Google-Colab and shows the algorithms of the API a bit closer and not capsulated.
+2. [Simple-Notebook.ipynb](Simple-Notebook.ipynb) is the same notebook as the one in Google-Colab and shows the algorithms of the API a bit closer and not capsulated.
 3. [encapsulated_execution.ipynb](encapsulated_execution.ipynb) shows how to access the provided API to produce the results from the paper
 4. [secure_boot_walk_through.ipynb](secure_boot_walk_through.ipynb) shows the finding of COs in a secure boot trace and the subsequent successful CPA on the segmented traces.
 
@@ -36,7 +36,8 @@ If you dont want to do this manually, here is the conda create comand:
 conda create -n clean37 python=3.7 scipy jupyter holoviews bokeh ipykernel tikzplotlib numba pyopencl ocl-icd-system
 ```  
 
-After executing this and trying the setup_test.ipynb you should be good to go!
+After executing this and you have to activate the environment "clean37" in Jupyter-Notebooks.
+If the setup_test.ipynb produces an expected output you should be good to go!
 
 
 For the secure-boot example you might also need the following packages:

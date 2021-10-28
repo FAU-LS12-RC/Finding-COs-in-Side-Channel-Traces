@@ -214,11 +214,11 @@ class SampleFinder:
                     min_threshold = filtered_correlation[min_peak] - (filtered_correlation[max_peak] - filtered_correlation[min_peak])*2/self.trace_container.nr_hidden_cos
                     for overlap_peak_idx in range(self.trace_container.nr_hidden_cos,len(peak_idx_list)):
                         overlap_peak = peak_idx_list[overlap_peak_idx]/correlation_step_size
-                        if self.print_info: print("hidden cycles = "+ str(self.trace_container.nr_hidden_cos) +"removed, peaklistlennow:" + str(len(peak_idx_list)))
+                        #if self.print_info: print("hidden cycles = "+ str(self.trace_container.nr_hidden_cos) +"removed, peaklistlennow:" + str(len(peak_idx_list)))
                         if filtered_correlation[int(overlap_peak)] < min_threshold:
                             #remove this point and because it does not belong here
                             peak_idx_list=peak_idx_list[:overlap_peak_idx]
-                            if self.print_info: print("REMOVED: hidden cycles = "+ str(self.trace_container.nr_hidden_cos) +"removed " + str(np.where(peak_idx_list==overlap_peak)) + " peaklistlennow:" + str(len(peak_idx_list)))
+                            if self.print_info: print("REMOVED last peaks because they are too low: hidden cycles = "+ str(self.trace_container.nr_hidden_cos) +" peaklistlennow:" + str(len(peak_idx_list)))
                             break
         return (peak_idx_list, least_peaks,chosen_mean_event)
 
