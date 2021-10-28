@@ -3,28 +3,34 @@
 import numpy as np
 import pandas as pd
 from scipy import signal
-import scipy
 from scipy.io import loadmat
-import itertools
-import random
 
 import holoviews as hv
 from bokeh.plotting import figure, show
 from bokeh.io import output_notebook, reset_output, save, export_svgs
 
-from waveform_parser.lecroy_waveform_parser import LecroyWaveformBinaryParser
-from helper import highpass_filter, detrending_filter
+from src.waveform_parser.lecroy_waveform_parser import LecroyWaveformBinaryParser
+from src.helper import highpass_filter, detrending_filter
 
-from trace_container import TraceContainer
+from src.trace_container import TraceContainer
 import configparser
-import json
 
 class TraceImporter:
     def __init__(self, testcase="langer_probes_short",averaged_measurements=10, number_of_aes=None, print_info = False, do_plots = False,index=0,use_lowpass = False):
         self.trace_container = TraceContainer()
-        base_path_traces = "colab_traces/"
+        base_path_traces = "traces/"
         #base_path_traces = ""
-        
+        if testcase=="mbed_tls_secure_boot_resampled":
+            basepath = base_path_traces + "arm-m4-48MHz/"
+            filepath = "secure_boot_trace.npy"
+
+            self.config = configparser.ConfigParser()
+            self.config.read(basepath+"properties.ini",encoding= 'unicode_escape')
+            #read meaningful values!
+            self.trace_container.import_from_config(self.config,filepath)
+            self.trace_container.trace = np.load(basepath+filepath)
+            self.trace_container.trace_raw = np.load(basepath+filepath)
+       
         if testcase=="beaglebone_openssl_aes128":
             basepath = base_path_traces + "bbb_openssl/"
             filepath = "full_32.bin"
@@ -41,8 +47,6 @@ class TraceImporter:
             self.trace_container.import_from_config(self.config,filepath)
             self.trace_container.trace = data[int(len(data)/2):]
             self.trace_container.trace_raw = data[int(len(data)/2):]
-            #self.trace_container.trace = data
-            #self.trace_container.trace_raw = data
             
         if testcase=="stm32f4_tinyaes":
             basepath = base_path_traces + "stm32f4/"
@@ -65,7 +69,6 @@ class TraceImporter:
             self.trace_container.trigger_trace = np.load(basepath+trigger_trace_path)
             self.trace_container.trigger_trace_raw = np.load(basepath+trigger_trace_path)
             #Resampling due to floating point reasons: 
-            #f_s_new = (int)(np.round(self.trace_container.sampling_frequency/self.trace_container.known_device_frequency)*self.trace_container.known_device_frequency)
             f_s_new = 120000000
             self.trace_container.resample(f_s_new=f_s_new)
         if testcase=="stm32f4_HWAES":
@@ -92,15 +95,6 @@ class TraceImporter:
             #f_s_new = (int)(np.round(self.trace_container.sampling_frequency/self.trace_container.known_device_frequency)*self.trace_container.known_device_frequency)
             f_s_new = 480000000
             self.trace_container.resample(f_s_new=f_s_new)
-
-            #if testcase=="stm32f4_HWAES":
-            #    low_bound = 10100*50
-            #    high_bound = int(8.005e5*50)
-            #    self.trace_container.trace = self.trace_container.trace[low_bound:high_bound]
-            #    self.trace_container.trace_raw = self.trace_container.trace_raw[low_bound:high_bound]
-            #    self.trace_container.trigger_trace = self.trace_container.trigger_trace[low_bound:high_bound]
-            #    self.trace_container.trigger_trace_raw = self.trace_container.trigger_trace_raw[low_bound:high_bound]
-            
 
         if testcase=="arm-m4" or testcase=="mbed_tls_AES":
             basepath = base_path_traces + "arm-m4-48MHz/"
@@ -163,10 +157,6 @@ class TraceImporter:
             self.trace_container.import_from_config(self.config,filepath)
             loaded_mat = loadmat(basepath+filepath)
 
-            print(loaded_mat.get("power"))
-            print(loaded_mat.get("trigger"))
-
-
             self.trace_container.trace = np.array(loaded_mat.get("power")[0])
             self.trace_container.trace_raw = np.array(loaded_mat.get("power")[0])
             self.trace_container.trigger_trace = np.array(loaded_mat.get("trigger")[0])
@@ -175,29 +165,7 @@ class TraceImporter:
             f_s_new = 1080000000
             self.trace_container.resample(f_s_new=f_s_new)
 
-        if testcase=="ECDSA_stable":
-            basepath = base_path_traces + "sha/"
-            filepath = "ecdsa_stable.mat"
-
-            self.config = configparser.ConfigParser()
-            self.config.read(basepath+"properties.ini",encoding= 'unicode_escape')
-            #read meaningful values!
-            self.trace_container.import_from_config(self.config,filepath)
-            loaded_mat = loadmat(basepath+filepath)
-
-            print(loaded_mat.get("power"))
-            print(loaded_mat.get("trigger"))
-
-
-            self.trace_container.trace = np.array(loaded_mat.get("power")[0])
-            self.trace_container.trace_raw = np.array(loaded_mat.get("power")[0])
-            self.trace_container.trigger_trace = np.array(loaded_mat.get("trigger")[0])
-            self.trace_container.trigger_trace_raw = np.array(loaded_mat.get("trigger")[0])
-            #Resampling due to floating point reasons: 
-            #f_s_new = 192000000
-            f_s_new = (int)(np.round(self.trace_container.sampling_frequency/self.trace_container.known_device_frequency)*self.trace_container.known_device_frequency)
-            self.trace_container.resample(f_s_new=f_s_new)
-    
+       
 
     def decimate_trace(self,decimation_factor,do_plots=False):
         self.decimation_factor = decimation_factor

@@ -82,7 +82,7 @@ class Autocorrelation_Accelerator:
         #print(correlation_host)
         #print(len(correlation_host))
         #print("max = " + str(max(correlation_host)))
-        if idx_list == []:
+        if len(idx_list) == 0:
             idx_list = np.array(range(len(trace)))
         else:
             idx_list = np.array(idx_list)

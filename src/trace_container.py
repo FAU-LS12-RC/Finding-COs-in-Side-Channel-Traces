@@ -184,7 +184,7 @@ class TraceContainer:
         self.sampling_frequency = self.get_fs(raw=True)/decimation_factor
         self.trace = decimated_trace
         self.test_trace = decimated_test_trace
-        print("Decimating signal. This can take a while.")
+        print("Decimating signal by a factor of " + str(decimation_factor) +". This can take a while.")
         
         self.trace = signal.decimate(np.array(self.trace_raw), decimation_factor)
         self.sampling_frequency = self.sampling_frequency_raw/decimation_factor

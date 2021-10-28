@@ -13,8 +13,8 @@ import holoviews as hv
 from bokeh.plotting import figure, show
 from bokeh.io import output_notebook, reset_output, save, export_svgs,output_file
 
-from helper import top_x_array,highpass_filter,printProgressBar,_print,detrending_filter,Plotter,calc_sad_over_everything
-from autocorrelation_accl import Autocorrelation_Accelerator
+from src.helper import top_x_array,highpass_filter,printProgressBar,_print,detrending_filter,Plotter,calc_sad_over_everything
+from src.autocorrelation_accl import Autocorrelation_Accelerator
 
 class SampleFinder:
     def __init__(self, trace_container, top_x = 10, do_plots=False,print_info=True, error_margin=0.02,exact_clk_cycles = None,allowed_sub_peak_delta = 2):
@@ -43,12 +43,19 @@ class SampleFinder:
         self.filtered_correlation_dict = {}
         self.mean_event_dicts = {}
 
+    # 
     def full_auto_find_COs(self,do_quality_plot=False, do_main_sub_peak_plot=False, sad_for_autocorr = False, sad_approach=True, avg_round_template=True, use_detrended = False):
-        #1. Find device frequency
-        f_device = int(np.round(self.find_device_frequency()))
-        if self.print_info:
-            print("Found device frequency:      "+ str(f_device))
-            print("really is :  (and setting to)"+str(self.trace_container.known_device_frequency))
+        """
+            full_auto_find_COs Finds all COs in the trace in self.trace_container.
+
+            :param do_quality_plot: If this is set, the similarity of step 1 will be plotted (takes a lot of time)
+            :param do_main_sub_peak_plot: If this is set, the similarity of step 3 will be plotted. This is where the main-peaks and sub-peaks are.
+            :param sad_for_autocorr: Calculates the round-similarity with SAD instead of the Pearson correlation
+            :param sad_approach: Calculates the similarity of the found template candidate (through step 1) with SAD instead of the Pearson correlation
+            :param avg_round_template: Instead of using the entire CO as a template, average all rounds, then concatenate them together
+            :param use_detrended: Use a rolling average filter to detrend the similarity of the similarity in step 1
+            :return: returns a triple with the best_fitting_width found, a list of starting indices that we found and the CO-Template candidate that we chose.
+        """ 
         f_device = self.trace_container.known_device_frequency
         self.trace_container.calculated_device_frequency = f_device
         samples_per_clock = self.trace_container.get_fs() / f_device
@@ -87,92 +94,6 @@ class SampleFinder:
         self.trace_container.calculated_start_idx_aes = peak_idx_list
         self.trace_container.calculated_width = best_fitting_width
         return (best_fitting_width,peak_idx_list,char_trace_template)
-
-
-    def find_device_frequency(self,do_plots = False):
-        #retrieve frequency of the device:
-        from scipy.fftpack import fft, fftfreq, fftshift
-
-        #only use subset:
-        #y = self.trace_container.get_trace()[:min(len(self.trace_container.get_trace())-1,50000)]
-        y = self.trace_container.get_trace(raw=True)
-
-        N = len(y)
-        T = 1/self.trace_container.get_fs(raw=True)
-        yf = fft(y)
-        xf = fftfreq(N, T)
-        yf = yf[:int(len(yf)/2)]
-        xf = xf[:int(len(xf)/2)]
-        if do_plots:
-            hv.extension('bokeh')
-            output_notebook()
-            p = figure(width=900, height=600)
-            p.line(xf, 1.0/N * np.abs(yf))
-            show(p)
-            if False:
-                output_file("FFT_HERE.html", mode='inline')
-                save(p)
-
-        nr_highest_frequencies = 4
-        dom_frequencies = []
-        i=0
-        while i<nr_highest_frequencies:
-            if int(round(xf[np.argmax(np.abs(yf))])) > 10000:
-                dom_frequencies.append(int(round(xf[np.argmax(np.abs(yf))])))
-                i=i+1
-            #if(self.testcase=="bulk" or self.testcase=="stm32f4_tinyaes"):
-            #    for null_idx in range(max(0,np.argmax(np.abs(yf))-5000),min(np.argmax(np.abs(yf))+5000,len(yf))):
-            #        yf[null_idx]=0      
-            #else:
-            yf[np.argmax(np.abs(yf))] = 0
-        print(dom_frequencies)
-        dominating_frequency = gcd(dom_frequencies[0],dom_frequencies[1])
-        return dominating_frequency
-        #return dominating_frequency
-        
-       
-
-    def find_best_width_with_autocorrelation(self,w_list,f_device=100000000):
-        #go through all possible widhts to determine the best one! (w = perfect segment width)
-
-        widths_correlation = []
-
-        for w in w_list:   
-            printProgressBar(np.where(w_list==w)[0][0],len(w_list)-1)
-            len_all_rounds = w*self.trace_container.no_similar_rounds
-            if(len_all_rounds>len(self.trace_container.get_trace())):
-                break
-            correlation_list = []
-            #all start positions need to be considered!
-            for i in np.arange(0,len(self.trace_container.get_trace())-len_all_rounds,step=1,dtype=int):
-                possible_mean_segment = np.average([self.trace_container.get_trace()[i+w*j:i+w*(j+1)] for j in range(self.trace_container.no_similar_rounds)],axis=0)
-                all_segments_correlations = [np.abs(scipy.stats.pearsonr(possible_mean_segment,self.trace_container.get_trace()[i+j*w:i+(j+1)*w])[0]) for j in range(self.trace_container.no_similar_rounds)]
-                #correlation_min = np.min(all_segments_correlations) # yields best results!
-
-                #correlation_max = np.max(all_segments_correlations)
-                correlation_avg = np.average(all_segments_correlations)
-                #correlation_only_first = scipy.stats.pearsonr(possible_mean_segment,self.trace_container.get_trace()[i:i+w])[0] #only correlation coefficient
-                correlation = correlation_avg
-                correlation_list.append(correlation)
-            #found best correlation spot --> how many peaks do we get here?!
-            print(len(correlation_list))
-            top_x_correlation = top_x_array(np.array(correlation_list),self.top_x,scale=1)
-            widths_correlation.append(top_x_correlation)
-
-            #correlation_list_detrended = detrending_filter(correlation_list[:len(correlation_list)-w*self.trace_container.no_similar_rounds],w*self.trace_container.no_similar_rounds*2)
-             
-            #Plotter(range(len(correlation_list)),correlation_list,"Sample","Correlation","Correlation of right width (autocorr)","correlation_host")
-            #Plotter(range(len(correlation_list_detrended)),correlation_list_detrended,"Sample","Correlation detrended","Correlation detrended of right width (autocorr)","correlation_host")
-
-        print("\n")
-        print("-------------_RESULTS-------------------------------")
-        widths_correlation = np.array(widths_correlation)
-        best_widths = top_x_array(widths_correlation[:,0,0],20)
-        return best_widths,widths_correlation
-
-    
-
-
 
     def number_of_equidistant_peaks(self,x,distance,main_peak_idx=0,max_peaks=9,delta=1):
         number_of_peaks = 0
@@ -224,10 +145,7 @@ class SampleFinder:
                 break
 
             peak_idx.append(max_idx*correlation_step_size)
-            #%%TODO: was -1 and + 1.2!
-            #for i in range(max(0,max_idx-int(w_event*0.7)),min(len(correlation_removed_peaks),max_idx + int(w_event*0.7))):
             for i in range(max(0,max_idx-int(w_event*0.7)),min(len(correlation_removed_peaks),max_idx + int(w_event*0.7))):
-                # times 1.2 because of overhead when shifting in data and stuff!
                 correlation_removed_peaks[i] = 0
         return peak_idx, nr_of_peaks
 
@@ -274,8 +192,10 @@ class SampleFinder:
                 output_notebook()
                 p = figure(width=900, height=600)
                 x_range = range(0, len(self.trace_container.get_trace()))
-                p.line(np.arange(0,len(self.trace_container.get_trace()),step=correlation_step_size),all_correlation*np.max(self.trace_container.get_trace()),color='black')
-                p.line(np.arange(0,len(self.trace_container.get_trace()),step=correlation_step_size),filtered_correlation*np.max(self.trace_container.get_trace())-np.max(self.trace_container.get_trace()),color='orange')
+                corr_plot_y = all_correlation*np.max(self.trace_container.get_trace())
+                p.line(np.arange(0,len(self.trace_container.get_trace()),step=correlation_step_size)[:len(corr_plot_y)],corr_plot_y,color='black')
+                filtered_corr_plot_y = filtered_correlation*np.max(self.trace_container.get_trace())-np.max(self.trace_container.get_trace())
+                p.line(np.arange(0,len(self.trace_container.get_trace()),step=correlation_step_size)[:len(filtered_corr_plot_y)],filtered_corr_plot_y,color='orange')
                 show(p)
         else:
             filtered_correlation = self.filtered_correlation_dict[w]
@@ -285,7 +205,7 @@ class SampleFinder:
         peak_idx_list,least_peaks = self.find_peaks(filtered_correlation,int(w/correlation_step_size),int((self.trace_container.no_similar_rounds*w)/correlation_step_size),correlation_step_size,min_number_of_sub_peaks,max_num_peaks=max_num_peaks,allowed_sub_peak_delta=allowed_sub_peak_delta,no_rounds=self.trace_container.no_similar_rounds)
         peak_idx_list = (np.array(peak_idx_list))
         
-        #remove overlapping peaks if they dont fit!!!!!!!!!!!
+        #remove overlapping peaks if they dont fit
         if(len(peak_idx_list) > self.trace_container.nr_hidden_cos):
                     #here we check if the peaks that where added at last fit into the by then collected peaks. if they do, its not our case!
                     min_peak = int(peak_idx_list[self.trace_container.nr_hidden_cos-1]/correlation_step_size)
@@ -327,7 +247,7 @@ class SampleFinder:
                     continue
                 if(len(peak_idx_list) >= int(self.trace_container.nr_hidden_cos) and len(peak_idx_list) <= self.trace_container.nr_hidden_cos + int(self.trace_container.nr_hidden_cos*self.error_margin)  ): # Margin for error :)
                     peak_idx_list = peak_idx_list[:self.trace_container.nr_hidden_cos]
-                    print("right number of COs for with of " + str(width))
+                    print("right number of COs for width of " + str(width))
                     if self.print_info:print("peaks: ")
                     if self.print_info:print(peak_idx_list)
                     best_fitting_width = width
@@ -373,15 +293,12 @@ class SampleFinder:
             #hv.save(curve,'test.svg',fmt='',backend='bokeh')
             p =  hv.render(curve, backend='bokeh')
             show(p)
-        #peak_idx_list, nr_of_sub_peaks = self.find_peaks(filtered_correlation,self.trace_container.calculated_width,self.trace_container.calculated_width*self.trace_container.no_similar_rounds,correlation_step_size,min_number_of_sub_peaks=2,no_rounds=self.trace_container.no_similar_rounds,max_num_peaks=self.trace_container.nr_hidden_cos,allowed_sub_peak_delta=2)
         peak_idx_list, peak_end_idx_list = self.get_peaks_above_threshold(filtered_correlation,correlation_step_size)
         
         return peak_idx_list
 
 
-    #@jit(nopython=True)
     def get_peaks_above_threshold(self,correlation, correlation_step_size,threshold=0):
-
         correlation_removed_peaks = np.copy(correlation)
         window_size = int(self.trace_container.calculated_width)*self.trace_container.no_similar_rounds
 
