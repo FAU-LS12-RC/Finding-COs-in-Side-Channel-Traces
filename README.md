@@ -33,7 +33,7 @@ The new environment should be with python 3.7 and have the following packages in
 
 If you dont want to do this manually, here is the conda create comand:
 ```properties
-conda create -n clean37 python=3.7 scipy jupyter holoviews bokeh ipykernel tikzplotlib numba pyopencl ocl-icd-system"
+conda create -n clean37 python=3.7 scipy jupyter holoviews bokeh ipykernel tikzplotlib numba pyopencl ocl-icd-system
 ```  
 
 After executing this and trying the setup_test.ipynb you should be good to go!
