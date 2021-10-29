@@ -47,24 +47,25 @@ The provided notebooks require Python 3.7 and the following packages:
 
 
 We recommend installing these packages as part of a new Conda environment or Python virtual environment.
-You can use anaconda (https://docs.anaconda.com/anaconda/install/) or create a normal Python virtual environment.
+You can use the Python 3.7 build of [miniconda](https://docs.conda.io/en/latest/miniconda.html#linux-installers) or create a normal Python virtual environment. 
 
 To create a suitable Conda environment:
-```
-conda create -n co-finder python=3.7 scipy jupyter holoviews bokeh ipykernel tikzplotlib numba pyopencl ocl-icd-system scared
-```  
+* `conda create -n co-finder`
+* `conda activate co-finder`
+* `conda install -c conda-forge scipy jupyter holoviews bokeh ipykernel tikzplotlib numba pyopencl ocl-icd-system scared`
+* `conda install -c eshard scared`
 
 Or to create a Python 3.7 virtualenv:
-* Create a virtual environment: `Python3.7 -m venv ./co-finder`
-* Activate the environment: `source co-finder/bin/activate`
-* Install the required libraries: `pip3 install scipy jupyter holoviews bokeh ipykernel tikzplotlib numba pyopencl ocl-icd-system scared`
+* `Python3.7 -m venv ./co-finder`
+* `source co-finder/bin/activate`
+* `pip3 install scipy jupyter holoviews bokeh ipykernel tikzplotlib numba pyopencl ocl-icd-system scared`
 
 Once this setup is complete you should be able to run the provided notebooks.
 To do so you can run the following commands in a terminal:
 
 * `git clone https://github.com/FAU-LS12-RC/Finding-COs-in-Side-Channel-Traces`
 * Ensure that your Conda environment (or Python virtual environment) is still active!
-    * Conda: `conda activate mlsca`
+    * Conda: `conda activate co-finder`
     * Python virtualenv: `source co-finder/bin/activate`
 * `cd Finding-COs-in-Side-Channel-Traces`
 * Start the Jupyter server: `jupyter notebook`
