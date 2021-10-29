@@ -52,7 +52,7 @@ You can use the Python 3.7 build of [miniconda](https://docs.conda.io/en/latest/
 To create a suitable Conda environment:
 * `conda create -n co-finder`
 * `conda activate co-finder`
-* `conda install -c conda-forge scipy jupyter holoviews bokeh ipykernel tikzplotlib numba pyopencl ocl-icd-system scared`
+* `conda install -c conda-forge scipy jupyter holoviews bokeh ipykernel tikzplotlib numba pyopencl ocl-icd-system`
 * `conda install -c eshard scared`
 
 Or to create a Python 3.7 virtualenv:
