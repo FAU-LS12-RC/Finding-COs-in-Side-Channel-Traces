@@ -2,7 +2,7 @@
 
 from enum import IntEnum
 
-from base_waveform import BaseWaveform
+from src.waveform_parser.base_waveform import BaseWaveform
 
 
 class LecroyWaveformDescriptor:

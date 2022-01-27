@@ -6,8 +6,8 @@ import holoviews as hv
 from bokeh.plotting import figure, show
 from bokeh.io import output_notebook, reset_output
 
-from helper import _print, detrending_filter
-from autocorrelation_accl import Autocorrelation_Accelerator
+from src.helper import _print, detrending_filter
+from src.autocorrelation_accl import Autocorrelation_Accelerator
 
 
 class SampleFinder:

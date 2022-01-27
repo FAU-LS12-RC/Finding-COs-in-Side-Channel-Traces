@@ -4,8 +4,8 @@ from bokeh.plotting import figure, show
 from bokeh.palettes import Dark2_5 as palette
 from bokeh.io import output_notebook, reset_output
 
-from autocorrelation_accl import Autocorrelation_Accelerator
-from helper import calc_sad
+from src.autocorrelation_accl import Autocorrelation_Accelerator
+from src.helper import calc_sad
 
 
 class Refiner:

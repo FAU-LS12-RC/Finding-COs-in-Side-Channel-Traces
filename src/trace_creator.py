@@ -8,9 +8,9 @@ import holoviews as hv
 from bokeh.plotting import  show
 from bokeh.io import output_notebook, reset_output
 
-from waveform_parser.lecroy_waveform_parser import LecroyWaveformBinaryParser
+from src.waveform_parser.lecroy_waveform_parser import LecroyWaveformBinaryParser
 
-from trace_container import TraceContainer
+from src.trace_container import TraceContainer
 import configparser
 
 
