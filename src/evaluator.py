@@ -1,10 +1,5 @@
 #!/usr/bin/python3
-
 import numpy as np
-from scipy import signal
-import itertools
-
-from src.trace_container import TraceContainer
 
 class Evaluator:
 

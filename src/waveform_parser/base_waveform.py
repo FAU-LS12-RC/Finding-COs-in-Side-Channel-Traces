@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 class BaseWaveform:
-	
+
     def __init__(self):
         self.dataValues = list()
         self.horizontalTimeAtFrameStart = 0
@@ -13,8 +13,9 @@ class BaseWaveform:
     def getDataValues(self):
         timeValues = list()
         if self.horizontalTimePerSample != 0:
-            for timestamp in range(0, len( self.dataValues ), 1):
-                timeValues.append(self.horizontalTimeAtFrameStart + (self.horizontalTimePerSample * timestamp) )
+            for timestamp in range(0, len(self.dataValues), 1):
+                timeValues.append(self.horizontalTimeAtFrameStart +
+                                  (self.horizontalTimePerSample * timestamp))
         return timeValues, self.dataValues
 
     def pushBackValue(self, value):

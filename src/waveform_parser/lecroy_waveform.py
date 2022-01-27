@@ -4,6 +4,7 @@ from enum import IntEnum
 
 from src.waveform_parser.base_waveform import BaseWaveform
 
+
 class LecroyWaveformDescriptor:
 
     class CommType(IntEnum):
@@ -35,7 +36,7 @@ class LecroyWaveformDescriptor:
         NO_RESULT = 5
         ROLLING = 6
         CUMULATIVE = 7
-    
+
     class Timebase(IntEnum):
         TIMEBASE_1_PS_PER_DIV = 0
         TIMEBASE_2_PS_PER_DIV = 1
@@ -127,14 +128,14 @@ class LecroyWaveformDescriptor:
     class BandwidthLimit(IntEnum):
         BANDWIDTH_LIMIT_OFF = 0
         BANDWIDTH_LIMIT_ON = 1
-    
+
     class WaveSource(IntEnum):
         CHANNEL_1 = 0
         CHANNEL_2 = 1
         CHANNEL_3 = 2
         CHANNEL_4 = 3
         UNKNOWN_CHANNEL = 9
-    
+
     def __init__(self):
         self.descriptorName = "Default"
         self.templateName = "Default"
@@ -198,26 +199,31 @@ class LecroyWaveformDescriptor:
         self.verticalVernier = 0.0
         self.acquisitionVerticalOffset = 0.0
         self.waveSource = self.WaveSource.UNKNOWN_CHANNEL
-        
+
     def dump(self):
         print("[WAVEFORM DESCRIPTOR]")
         print("\t *Descriptor Name: " + self.getDescriptorName())
         print("\t *Template Name: " + self.getTemplateName())
         print("\t *CommType: " + str(self.getCommType()))
         print("\t *CommOrder: " + str(self.getCommOrder()))
-        
-        print("\t *WaveDescriptorBlockLength: " + str(self.getWaveDescriptorBlockLength()))
+
+        print("\t *WaveDescriptorBlockLength: " +
+              str(self.getWaveDescriptorBlockLength()))
         print("\t *UserTextBlockLength: " + str(self.getUserTextBlockLength()))
-        print("\t *ReservedDescriptor1BlockLength: " + str(self.getReservedDescriptor1BlockLength()))
-        
+        print("\t *ReservedDescriptor1BlockLength: " +
+              str(self.getReservedDescriptor1BlockLength()))
+
         print("\t *TrigTimeArrayLength: " + str(self.getTrigTimeArrayLength()))
         print("\t *RISTimeArrayLength: " + str(self.getRISTimeArrayLength()))
         print("\t *WaveArray1Length: " + str(self.getWaveArray1Length()))
         print("\t *WaveArray2Length: " + str(self.getWaveArray2Length()))
-        print("\t *ReservedArray1Length: " + str(self.getReservedArray1Length()))
-        print("\t *ReservedArray2Length: " + str(self.getReservedArray2Length()))
-        print("\t *ReservedArray3Length: " + str(self.getReservedArray3Length()))
-        
+        print("\t *ReservedArray1Length: " +
+              str(self.getReservedArray1Length()))
+        print("\t *ReservedArray2Length: " +
+              str(self.getReservedArray2Length()))
+        print("\t *ReservedArray3Length: " +
+              str(self.getReservedArray3Length()))
+
         print("\t *InstrumentName: " + self.getInstrumentName())
         print("\t *InstrumentNumber: " + str(self.getInstrumentNumber()))
         print("\t *TraceLabel: " + self.getTraceLabel())
@@ -233,7 +239,8 @@ class LecroyWaveformDescriptor:
         print("\t *SparsingFactor: " + str(self.getSparsingFactor()))
         print("\t *SegmentIndex: " + str(self.getSegmentIndex()))
         print("\t *SUArrayCount: " + str(self.getSUArrayCount()))
-        print("\t *SweepsPerAcquisition: " + str(self.getSweepsPerAcquisition()))
+        print("\t *SweepsPerAcquisition: " +
+              str(self.getSweepsPerAcquisition()))
         print("\t *PointsPerPair: " + str(self.getPointsPerPair()))
         print("\t *PairOffset: " + str(self.getPairOffset()))
         print("\t *VerticalGain: " + str(self.getVerticalGain()))
@@ -247,7 +254,8 @@ class LecroyWaveformDescriptor:
         print("\t *PixelOffset: " + str(self.getPixelOffset()))
         print("\t *VerticalUnit: " + self.getVerticalUnit())
         print("\t *HorizontalUnit: " + self.getHorizontalUnit())
-        print("\t *HorizontalUncertainty: " + str(self.getHorizontalUncertainty()))
+        print("\t *HorizontalUncertainty: " +
+              str(self.getHorizontalUncertainty()))
 
         print("\t *TriggerTimeSeconds: " + str(self.getTriggerTimeSeconds()))
         print("\t *TriggerTimeMinutes: " + str(self.getTriggerTimeMinutes()))
@@ -268,20 +276,21 @@ class LecroyWaveformDescriptor:
         print("\t *Fixed Vertical Gain: " + str(self.getFixedVerticalGain()))
         print("\t *Bandwidth Limit: " + str(self.getBandwidthLimit()))
         print("\t *Vertical Vernier: " + str(self.getVerticalVernier()))
-        print("\t *Acuisition Vertical Offset: " + str(self.getAcquisitionVerticalOffset()))
+        print("\t *Acuisition Vertical Offset: " +
+              str(self.getAcquisitionVerticalOffset()))
         print("\t *Wave Source: " + str(self.getWaveSource()))
 
         print("[END WAVEFORM DESCRIPTOR]")
-    
+
     def getDescriptorName(self):
         return self.descriptorName
 
     def setDescriptorName(self, name):
         self.descriptorName = name
-    
+
     def getTemplateName(self):
         return self.templateName
-    
+
     def setTemplateName(self, name):
         self.templateName = name
 
@@ -308,7 +317,7 @@ class LecroyWaveformDescriptor:
 
     def setUserTextBlockLength(self, length):
         self.userTextLength = length
-    
+
     def getReservedDescriptor1BlockLength(self):
         return self.reservedDescriptor1Length
 
@@ -440,7 +449,7 @@ class LecroyWaveformDescriptor:
 
     def setSweepsPerAcquisition(self, sweeps):
         self.sweepsPerAcquisition = sweeps
-    
+
     def getPointsPerPair(self):
         return self.pointsPerPair
 
@@ -452,31 +461,31 @@ class LecroyWaveformDescriptor:
 
     def setPairOffset(self, offset):
         self.pairOffset = offset
-    
+
     def getVerticalGain(self):
         return self.verticalGain
 
     def setVerticalGain(self, gain):
         self.verticalGain = gain
-    
+
     def getVerticalOffset(self):
         return self.verticalOffset
 
     def setVerticalOffset(self, offset):
         self.verticalOffset = offset
-    
+
     def getMaximumValue(self):
         return self.maximumValue
 
     def setMaximumValue(self, value):
         self.maximumValue = value
-    
+
     def getMinimumValue(self):
         return self.minimumValue
 
     def setMinimumValue(self, value):
         self.minimumValue = value
-    
+
     def getNominalITS(self):
         return self.nominalITS
 
@@ -576,9 +585,9 @@ class LecroyWaveformDescriptor:
     def getRecordType(self):
         return self.recordType
 
-    def setRecordType(self,recordType):
+    def setRecordType(self, recordType):
         self.recordType = recordType
-    
+
     def getProcessingDone(self):
         return self.processingDone
 
@@ -645,13 +654,15 @@ class LecroyWaveformDescriptor:
     def setWaveSource(self, source):
         self.waveSource = source
 
+
 class LecroyWaveform(BaseWaveform):
     def __init__(self):
         super().__init__()
         self.waveformDescriptor = LecroyWaveformDescriptor()
-    
+
     def getWaveformDescriptor(self):
         return self.waveformDescriptor
+
 
 if __name__ == "__main__":
     waveform = LecroyWaveform()
