@@ -6,7 +6,7 @@ import numpy as np
 import scipy
 import pyopencl as cl
 
-from .helper import printProgressBar, top_x_array, Plotter, detrending_filter, autocorr_loop
+from helper import printProgressBar, top_x_array, Plotter, detrending_filter, autocorr_loop
 # open-cl stuff:
 
 
