@@ -1,10 +1,10 @@
-from src.helper import calc_sad
+from .helper import calc_sad
 import numpy as np
 import itertools
 from bokeh.plotting import figure, show
 from bokeh.palettes import Dark2_5 as palette
 from bokeh.io import output_notebook, reset_output
-from src.autocorrelation_accl import Autocorrelation_Accelerator
+from .autocorrelation_accl import Autocorrelation_Accelerator
 
 
 class Refiner:

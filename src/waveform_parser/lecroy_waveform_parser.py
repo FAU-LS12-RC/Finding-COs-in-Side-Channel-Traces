@@ -3,7 +3,7 @@
 import argparse
 import struct
 
-from src.waveform_parser.lecroy_waveform import LecroyWaveform, LecroyWaveformDescriptor
+from .lecroy_waveform import LecroyWaveform, LecroyWaveformDescriptor
 
 
 class LecroyWaveformDescriptorParser:
